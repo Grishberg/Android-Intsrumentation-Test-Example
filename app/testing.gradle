@@ -1,0 +1,11 @@
+
+tasks.create("startConnectedTest") {
+    doLast {
+        EmulatorConfig argPhone = new EmulatorConfig("test_phone",
+                DisplayMode.PHONE_HDPI, 26);
+        EmulatorConfig argTablet = new EmulatorConfig("test_tablet",
+                DisplayMode.TABLET_XHDPI, 26);
+
+        println "hello"
+    }
+}

@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Instrumental Test Sample</string>
+    <string name="button_for_phone">button for phone</string>
+    <string name="button_for_tablet">button for tablet</string>
+    <string name="text_for_phone">You clicked phone button</string>
+    <string name="text_for_tablet">You clicked tablet button</string>
+</resources>
