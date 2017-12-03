@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.github.grishberg.instrumentalplugin'
 apply plugin: 'com.github.grishberg.androidemulatormanager'
+apply plugin: 'groovy'
 
 android {
     compileSdkVersion 26
@@ -30,8 +31,6 @@ dependencies {
 
     // instrumental test framework
     androidTestImplementation 'com.github.grishberg:annotationprinter:0.1.1'
-    androidTestImplementation 'com.github.grishberg:AndroidEmulatorManager:0.2.2'
-
 }
 
 apply from: 'testing.gradle'

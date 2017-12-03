@@ -1,7 +1,8 @@
+//import com.github.grishberg.androidemulatormanager.EmulatorConfig
 
 tasks.create("startConnectedTest") {
     doLast {
-        /*
+/*
         EmulatorConfig argPhone = new EmulatorConfig("test_phone",
                 DisplayMode.PHONE_HDPI, 26)
         EmulatorConfig argTablet = new EmulatorConfig("test_tablet",
