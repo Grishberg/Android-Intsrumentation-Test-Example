@@ -1,10 +1,35 @@
+import com.github.grishberg.androidemulatormanager.CreateEmulatorsTask
+import com.github.grishberg.androidemulatormanager.DeleteEmulatorsTask
+import com.github.grishberg.androidemulatormanager.EmulatorConfig
+import com.github.grishberg.androidemulatormanager.StartEmulatorsTask
+import com.github.grishberg.androidemulatormanager.StopEmulatorsTask
+import com.github.grishberg.androidemulatormanager.WaitForEmulatorsTask
 
 tasks.create("startConnectedTest") {
     doLast {
         EmulatorConfig argPhone = new EmulatorConfig("test_phone",
-                DisplayMode.PHONE_HDPI, 26);
+                DisplayMode.PHONE_HDPI, 26)
         EmulatorConfig argTablet = new EmulatorConfig("test_tablet",
-                DisplayMode.TABLET_XHDPI, 26);
+                DisplayMode.TABLET_XHDPI, 26)
+
+        EmulatorConfig[] args = [argPhone, argTablet]
+        ext.setEmulatorArgs(args)
+        ext.setWaitingTimeout(60 * 1000)
+
+        CreateEmulatorsTask createTask = (CreateEmulatorsTask) project.getTasks()
+                .getByName("createEmulators")
+
+        StartEmulatorsTask startEmulatorsTask = (StartEmulatorsTask) project.getTasks()
+                .getByName("startEmulators")
+
+        WaitForEmulatorsTask waitForEmulatorsTask = (WaitForEmulatorsTask) project.getTasks()
+                .getByName("waitForEmulators")
+
+        StopEmulatorsTask stopEmulatorsTask = (StopEmulatorsTask) project.getTasks()
+                .getByName("stopRunningEmulators")
+
+        DeleteEmulatorsTask deleteTasks = (DeleteEmulatorsTask) project.getTasks()
+                .getByName("deleteEmulators")
 
         println "hello"
     }

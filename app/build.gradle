@@ -1,6 +1,16 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.grishberg:AndroidInstrumentalTestRunner:0.1.4'
+        classpath 'com.github.grishberg:AndroidEmulatorManager:0.2.2'
+    }
+}
+
 apply plugin: 'com.android.application'
-//apply plugin: EmulatorManagerPlugin
-//apply plugin: InstrumentalTestPlugin
+apply plugin: 'com.github.grishberg.instrumentalplugin'
+apply plugin: 'com.github.grishberg.androidemulatormanager'
 
 android {
     compileSdkVersion 26
@@ -29,11 +39,9 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
     // instrumental test framework
-    testCompile 'com.github.grishberg:annotationprinter:0.1.1'
-    // https://github.com/Grigory-Rylov/AndroidEmulatorManager
-    testCompile 'com.github.grishberg:AndroidEmulatorManager:0.2.0'
-    // https://github.com/Grigory-Rylov/android-instrumentation-test-runner
-    testCompile 'com.github.grishberg:AndroidInstrumentalTestRunner:0.1.0'
+    androidTestImplementation 'com.github.grishberg:annotationprinter:0.1.1'
+    androidTestImplementation 'com.github.grishberg:AndroidEmulatorManager:0.2.2'
+
 }
 
 apply from: 'testing.gradle'

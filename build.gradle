@@ -8,7 +8,11 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
-        
+
+        // https://github.com/Grigory-Rylov/AndroidEmulatorManager
+        //classpath 'com.github.grishberg:AndroidEmulatorManager:0.2.0'
+        // https://github.com/Grigory-Rylov/android-instrumentation-test-runner
+        //classpath 'com.github.grishberg:AndroidInstrumentalTestRunner:0.1.3'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
