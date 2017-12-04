@@ -1,5 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+import com.github.grishberg.androidemulatormanager.CreateEmulatorsTask
+import com.github.grishberg.androidemulatormanager.DeleteEmulatorsTask
+import com.github.grishberg.androidemulatormanager.EmulatorConfig
+import com.github.grishberg.androidemulatormanager.EmulatorManagerConfig
+import com.github.grishberg.androidemulatormanager.StartEmulatorsTask
+import com.github.grishberg.androidemulatormanager.StopEmulatorsTask
+import com.github.grishberg.androidemulatormanager.WaitForEmulatorsTask
+import com.github.grishberg.androidemulatormanager.DisplayMode
+
 buildscript {
     
     repositories {
@@ -23,4 +32,38 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+tasks.create("startConnectedTest") {
+    doLast {
+        EmulatorConfig argPhone = new EmulatorConfig("test_phone",
+                DisplayMode.PHONE_HDPI, 26)
+        EmulatorConfig argTablet = new EmulatorConfig("test_tablet",
+                DisplayMode.TABLET_XHDPI, 26)
+
+        EmulatorConfig[] args = [argPhone, argTablet]
+        EmulatorManagerConfig config = project.extensions.findByType(EmulatorManagerConfig)
+        println config
+
+
+        config.setEmulatorArgs(args)
+        config.setWaitingTimeout(60 * 1000)
+
+        CreateEmulatorsTask createTask = (CreateEmulatorsTask) project.getTasks()
+                .getByName("createEmulators")
+
+        StartEmulatorsTask startEmulatorsTask = (StartEmulatorsTask) project.getTasks()
+                .getByName("startEmulators")
+
+        WaitForEmulatorsTask waitForEmulatorsTask = (WaitForEmulatorsTask) project.getTasks()
+                .getByName("waitForEmulators")
+
+        StopEmulatorsTask stopEmulatorsTask = (StopEmulatorsTask) project.getTasks()
+                .getByName("stopRunningEmulators")
+
+        DeleteEmulatorsTask deleteTasks = (DeleteEmulatorsTask) project.getTasks()
+                .getByName("deleteEmulators")
+
+        println "hello"
+    }
 }
