@@ -62,8 +62,12 @@ class TestArgsProvider implements InstrumentationArgsProvider {
 
 Project appProject = project.rootProject.project("app:")
 
+/**
+ * Task creates and launches emulators.
+ */
 def prepareEmulatorManager = appProject.tasks.create("prepareEmulatorManager") {
     finalizedBy('installDebug', 'installDebugAndroidTest')
+    group 'android'
     doLast {
         println "===================prepareEmulatorManager"
 
@@ -100,10 +104,30 @@ def prepareEmulatorManager = appProject.tasks.create("prepareEmulatorManager") {
 }
 
 /**
+ * Stops and deletes emulators.
+ */
+def stopEmulatorsAndDeleteTask = appProject.tasks.create("stopEmulatorsAndDelete") {
+    doLast {
+        StopEmulatorsTask stopEmulatorsTask = (StopEmulatorsTask) appProject.getTasks()
+                .getByName("stopRunningEmulators")
+
+        DeleteEmulatorsTask deleteTasks = (DeleteEmulatorsTask) appProject.getTasks()
+                .getByName("deleteEmulators")
+
+        println "stop emulators..."
+        stopEmulatorsTask.runTask()
+
+        println "delete emulators..."
+        deleteTasks.runTask()
+    }
+}
+
+/**
  * Setup custom instrumentation test runner.
  */
 def runTestTask = appProject.tasks.create("runTestTask") {
     dependsOn(prepareEmulatorManager)
+    finalizedBy stopEmulatorsAndDeleteTask
     group 'android'
     doLast {
         println "-------------------- start instrumentation tests"
@@ -122,7 +146,7 @@ def runTestTask = appProject.tasks.create("runTestTask") {
                 .build() as InstrumentationInfo
 
         instrumentalTestTask.setInstrumentationInfo(instrumentationInfo)
-        try{
+        try {
             instrumentalTestTask.runTask()
         } catch (Exception e) {
             appProject.logger.log(LogLevel.ERROR, e)
@@ -130,20 +154,11 @@ def runTestTask = appProject.tasks.create("runTestTask") {
     }
 }
 
+
+/**
+ * Starts creating emulators and running instrumental tests.
+ */
 appProject.tasks.create("startConnectedTest") {
     dependsOn runTestTask
     group 'android'
-    doLast {
-        StopEmulatorsTask stopEmulatorsTask = (StopEmulatorsTask) appProject.getTasks()
-                .getByName("stopRunningEmulators")
-
-        DeleteEmulatorsTask deleteTasks = (DeleteEmulatorsTask) appProject.getTasks()
-                .getByName("deleteEmulators")
-
-        println "stop emulators..."
-        stopEmulatorsTask.runTask()
-
-        println "delete emulators..."
-        deleteTasks.runTask()
-    }
 }
