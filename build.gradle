@@ -81,7 +81,7 @@ def prepareEmulatorManager = appProject.tasks.create("prepareEmulatorManager") {
         println config
 
         config.setEmulatorArgs(args)
-        config.setWaitingTimeout(60 * 3 * 1000)
+        config.setWaitingTimeout(60 * 2 * 1000)
 
         CreateEmulatorsTask createTask = (CreateEmulatorsTask) appProject.getTasks()
                 .getByName("createEmulators")
