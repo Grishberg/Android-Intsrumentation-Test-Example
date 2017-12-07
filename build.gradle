@@ -12,6 +12,9 @@ import com.github.grishberg.tests.InstrumentationInfo
 
 import com.github.grishberg.androidemulatormanager.DisplayMode
 
+import com.github.grishberg.tests.DeviceWrapper
+import com.github.grishberg.tests.InstrumentationArgsProvider
+
 buildscript {
 
     repositories {
@@ -21,8 +24,8 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
 
-        classpath 'com.github.grishberg:AndroidInstrumentalTestRunner:0.1.4'
-        classpath 'com.github.grishberg:AndroidEmulatorManager:0.2.6'
+        classpath 'com.github.grishberg:AndroidInstrumentalTestRunner:0.1.7'
+        classpath 'com.github.grishberg:AndroidEmulatorManager:0.2.7'
     }
 }
 
@@ -35,6 +38,26 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+/**
+ * Custom args provider for instrumentation tests.
+ */
+class TestArgsProvider implements InstrumentationArgsProvider {
+
+    private static final String TABLET_ANNOTATION =
+            "com.github.grishberg.instrumentaltestsample.TabletTest"
+
+    @Override
+    Map<String, String> provideInstrumentationArgs(DeviceWrapper targetDevice) {
+        HashMap<String, String> args = new HashMap<>()
+        if (targetDevice.name == "test_tablet") {
+            args.put("annotation", TABLET_ANNOTATION)
+        } else {
+            args.put("notAnnotation", TABLET_ANNOTATION)
+        }
+        return args
+    }
 }
 
 Project appProject = project.rootProject.project("app:")
@@ -76,14 +99,20 @@ def prepareEmulatorManager = appProject.tasks.create("prepareEmulatorManager") {
     }
 }
 
+/**
+ * Setup custom instrumentation test runner.
+ */
 def runTestTask = appProject.tasks.create("runTestTask") {
     dependsOn(prepareEmulatorManager)
-
+    group 'android'
     doLast {
         println "-------------------- start instrumentation tests"
 
         InstrumentalTestTask instrumentalTestTask = (InstrumentalTestTask) appProject
                 .tasks.getByName(InstrumentalTestTask.TASK_NAME)
+
+        // Custom Args provider for instrumentation test
+        instrumentalTestTask.instrumentationArgsProvider = new TestArgsProvider()
 
         def instrumentationInfo = new InstrumentationInfo.Builder(
                 "com.github.grishberg.instrumentaltestsample",
@@ -93,13 +122,17 @@ def runTestTask = appProject.tasks.create("runTestTask") {
                 .build() as InstrumentationInfo
 
         instrumentalTestTask.setInstrumentationInfo(instrumentationInfo)
-        instrumentalTestTask.runTask()
-
+        try{
+            instrumentalTestTask.runTask()
+        } catch (Exception e) {
+            appProject.logger.log(LogLevel.ERROR, e)
+        }
     }
 }
 
-tasks.create("startConnectedTest") {
+appProject.tasks.create("startConnectedTest") {
     dependsOn runTestTask
+    group 'android'
     doLast {
         StopEmulatorsTask stopEmulatorsTask = (StopEmulatorsTask) appProject.getTasks()
                 .getByName("stopRunningEmulators")
