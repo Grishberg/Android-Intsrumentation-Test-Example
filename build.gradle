@@ -1,19 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-import com.github.grishberg.androidemulatormanager.CreateEmulatorsTask
-import com.github.grishberg.androidemulatormanager.DeleteEmulatorsTask
-import com.github.grishberg.androidemulatormanager.EmulatorConfig
-import com.github.grishberg.androidemulatormanager.EmulatorManagerConfig
-import com.github.grishberg.androidemulatormanager.StartEmulatorsTask
-import com.github.grishberg.androidemulatormanager.StopEmulatorsTask
-import com.github.grishberg.androidemulatormanager.WaitForEmulatorsTask
-import com.github.grishberg.tests.InstrumentalTestTask
-import com.github.grishberg.tests.InstrumentationInfo
-
-import com.github.grishberg.androidemulatormanager.DisplayMode
-
-import com.github.grishberg.tests.DeviceWrapper
-import com.github.grishberg.tests.InstrumentationArgsProvider
 
 buildscript {
 
@@ -25,7 +11,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.0.1'
 
         classpath 'com.github.grishberg:AndroidInstrumentalTestRunner:0.1.7'
-        classpath 'com.github.grishberg:AndroidEmulatorManager:0.2.7'
+        classpath 'com.github.grishberg:AndroidEmulatorManager:0.2.13'
     }
 }
 
@@ -38,127 +24,4 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-/**
- * Custom args provider for instrumentation tests.
- */
-class TestArgsProvider implements InstrumentationArgsProvider {
-
-    private static final String TABLET_ANNOTATION =
-            "com.github.grishberg.instrumentaltestsample.TabletTest"
-
-    @Override
-    Map<String, String> provideInstrumentationArgs(DeviceWrapper targetDevice) {
-        HashMap<String, String> args = new HashMap<>()
-        if (targetDevice.name == "test_tablet") {
-            args.put("annotation", TABLET_ANNOTATION)
-        } else {
-            args.put("notAnnotation", TABLET_ANNOTATION)
-        }
-        return args
-    }
-}
-
-Project appProject = project.rootProject.project("app:")
-
-/**
- * Task creates and launches emulators.
- */
-def prepareEmulatorManager = appProject.tasks.create("prepareEmulatorManager") {
-    finalizedBy('installDebug', 'installDebugAndroidTest')
-    group 'android'
-    doLast {
-        println "===================prepareEmulatorManager"
-
-        EmulatorConfig argPhone = new EmulatorConfig("test_phone",
-                DisplayMode.PHONE_HDPI, 26)
-        EmulatorConfig argTablet = new EmulatorConfig("test_tablet",
-                DisplayMode.TABLET_XHDPI, 26)
-
-        EmulatorConfig[] args = [argPhone, argTablet]
-        EmulatorManagerConfig config = appProject.extensions.findByType(EmulatorManagerConfig)
-        println config
-
-        config.setEmulatorArgs(args)
-        config.setWaitingTimeout(60 * 2 * 1000)
-
-        CreateEmulatorsTask createTask = (CreateEmulatorsTask) appProject.getTasks()
-                .getByName("createEmulators")
-
-        StartEmulatorsTask startEmulatorsTask = (StartEmulatorsTask) appProject.getTasks()
-                .getByName("startEmulators")
-
-        WaitForEmulatorsTask waitForEmulatorsTask = (WaitForEmulatorsTask) appProject.getTasks()
-                .getByName("waitForEmulators")
-
-        println "creating emulators..."
-        createTask.runTask()
-
-        println "starting emulators..."
-        startEmulatorsTask.runTask()
-
-        println "waiting for emulators..."
-        waitForEmulatorsTask.runTask()
-    }
-}
-
-/**
- * Stops and deletes emulators.
- */
-def stopEmulatorsAndDeleteTask = appProject.tasks.create("stopEmulatorsAndDelete") {
-    doLast {
-        StopEmulatorsTask stopEmulatorsTask = (StopEmulatorsTask) appProject.getTasks()
-                .getByName("stopRunningEmulators")
-
-        DeleteEmulatorsTask deleteTasks = (DeleteEmulatorsTask) appProject.getTasks()
-                .getByName("deleteEmulators")
-
-        println "stop emulators..."
-        stopEmulatorsTask.runTask()
-
-        println "delete emulators..."
-        deleteTasks.runTask()
-    }
-}
-
-/**
- * Setup custom instrumentation test runner.
- */
-def runTestTask = appProject.tasks.create("runTestTask") {
-    dependsOn(prepareEmulatorManager)
-    finalizedBy stopEmulatorsAndDeleteTask
-    group 'android'
-    doLast {
-        println "-------------------- start instrumentation tests"
-
-        InstrumentalTestTask instrumentalTestTask = (InstrumentalTestTask) appProject
-                .tasks.getByName(InstrumentalTestTask.TASK_NAME)
-
-        // Custom Args provider for instrumentation test
-        instrumentalTestTask.instrumentationArgsProvider = new TestArgsProvider()
-
-        def instrumentationInfo = new InstrumentationInfo.Builder(
-                "com.github.grishberg.instrumentaltestsample",
-                "com.github.grishberg.instrumentaltestsample.test",
-                "android.support.test.runner.AndroidJUnitRunner")
-                .setFlavorName("TEST_FLAVOR")
-                .build() as InstrumentationInfo
-
-        instrumentalTestTask.setInstrumentationInfo(instrumentationInfo)
-        try {
-            instrumentalTestTask.runTask()
-        } catch (Exception e) {
-            appProject.logger.log(LogLevel.ERROR, e)
-        }
-    }
-}
-
-
-/**
- * Starts creating emulators and running instrumental tests.
- */
-appProject.tasks.create("startConnectedTest") {
-    dependsOn runTestTask
-    group 'android'
 }
