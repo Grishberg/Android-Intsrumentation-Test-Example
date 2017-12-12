@@ -1,3 +1,16 @@
-plugins {
-    id 'groovy'
+apply plugin: 'groovy'
+
+repositories {
+    google()
+    jcenter()
+}
+dependencies {
+    compile 'com.android.tools.build:gradle:3.0.1'
+
+    compile 'com.github.grishberg:android-instrumental-test-runner:0.1.8'
+    compile 'com.github.grishberg:android-emulator-manager:0.2.14'
+}
+
+dependencies {
+    compile gradleApi()
 }
