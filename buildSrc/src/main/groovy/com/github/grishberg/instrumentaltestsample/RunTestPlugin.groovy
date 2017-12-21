@@ -62,9 +62,10 @@ class RunTestPlugin implements Plugin<Project> {
                 println "--------------- setup emulators ----------------"
                 EmulatorConfig argPhone = new EmulatorConfig("test_phone",
                         DisplayMode.PHONE_HDPI, 26)
+                argPhone.setDiskSize(2048)
                 EmulatorConfig argTablet = new EmulatorConfig("test_tablet",
                         DisplayMode.TABLET_XHDPI, 26)
-
+                argTablet.setDiskSize(2048)
                 EmulatorConfig[] args = [argPhone, argTablet]
 
                 emulatorsConfig.setEmulatorArgs(args)
