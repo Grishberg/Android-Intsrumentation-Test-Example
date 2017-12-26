@@ -4,7 +4,7 @@ import com.github.grishberg.androidemulatormanager.CreateAndRunEmulatorsTask
 import com.github.grishberg.androidemulatormanager.DisplayMode
 import com.github.grishberg.androidemulatormanager.EmulatorConfig
 import com.github.grishberg.androidemulatormanager.EmulatorManagerConfig
-import com.github.grishberg.androidemulatormanager.StopAndDeleteEmulatorsTask
+import com.github.grishberg.androidemulatormanager.StopEmulatorsTask
 import com.github.grishberg.tests.InstrumentalTestTask
 import com.github.grishberg.tests.InstrumentationInfo
 import org.gradle.api.Plugin
@@ -20,7 +20,7 @@ class RunTestPlugin implements Plugin<Project> {
         EmulatorManagerConfig emulatorsConfig = project.extensions.findByType(EmulatorManagerConfig)
         Task instrumentalTestTask = project.tasks.findByName(InstrumentalTestTask.TASK_NAME)
         Task createAndRunEmulatorsTask = project.tasks.findByName(CreateAndRunEmulatorsTask.NAME)
-        Task stopEmulatorsTask = project.tasks.findByName(StopAndDeleteEmulatorsTask.NAME)
+        Task stopEmulatorsTask = project.tasks.findByName(StopEmulatorsTask.NAME)
         instrumentalTestTask.finalizedBy stopEmulatorsTask
 
         /**
