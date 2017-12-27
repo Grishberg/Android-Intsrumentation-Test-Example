@@ -9,7 +9,6 @@ import com.github.grishberg.tests.InstrumentalTestTask
 import com.github.grishberg.tests.InstrumentationInfo
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task;
 
 /**
  * Created by grishberg on 12.12.17.
@@ -18,9 +17,9 @@ class RunTestPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         EmulatorManagerConfig emulatorsConfig = project.extensions.findByType(EmulatorManagerConfig)
-        Task instrumentalTestTask = project.tasks.findByName(InstrumentalTestTask.TASK_NAME)
-        Task createAndRunEmulatorsTask = project.tasks.findByName(CreateAndRunEmulatorsTask.NAME)
-        Task stopEmulatorsTask = project.tasks.findByName(StopEmulatorsTask.NAME)
+        CreateAndRunEmulatorsTask createAndRunEmulatorsTask = project.tasks.findByName(CreateAndRunEmulatorsTask.NAME)
+        StopEmulatorsTask stopEmulatorsTask = project.tasks.findByName(StopEmulatorsTask.NAME)
+        InstrumentalTestTask instrumentalTestTask = project.tasks.findByName(InstrumentalTestTask.NAME)
         instrumentalTestTask.finalizedBy stopEmulatorsTask
 
         /**
@@ -28,7 +27,7 @@ class RunTestPlugin implements Plugin<Project> {
          */
         def runTestTask = project.tasks.create("runTestTask") {
             dependsOn('installDebug', 'installDebugAndroidTest')
-            finalizedBy instrumentalTestTask
+            finalizedBy 'instrumentalTestTask'
             mustRunAfter createAndRunEmulatorsTask
             group 'android'
             doLast {
@@ -36,7 +35,6 @@ class RunTestPlugin implements Plugin<Project> {
 
                 // Custom Args provider for instrumentation test
                 instrumentalTestTask.instrumentationArgsProvider = new TestArgsProvider()
-
                 def instrumentationInfo = new InstrumentationInfo.Builder(
                         "com.github.grishberg.instrumentaltestsample",
                         "com.github.grishberg.instrumentaltestsample.test",
@@ -44,13 +42,14 @@ class RunTestPlugin implements Plugin<Project> {
                         .setFlavorName("TEST_FLAVOR")
                         .build() as InstrumentationInfo
 
-                instrumentalTestTask.setInstrumentationInfo(instrumentationInfo)
+                instrumentalTestTask.commandProvider = In
+                instrumentalTestTask.instrumentationInfo = instrumentationInfo
             }
         }
 
-/**
- * Starts creating emulators and running instrumental tests.
- */
+        /**
+         * Starts creating emulators and running instrumental tests.
+         */
         project.tasks.create("startConnectedTest") {
             finalizedBy createAndRunEmulatorsTask
             finalizedBy runTestTask
