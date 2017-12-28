@@ -5,6 +5,7 @@ import com.github.grishberg.androidemulatormanager.DisplayMode
 import com.github.grishberg.androidemulatormanager.EmulatorConfig
 import com.github.grishberg.androidemulatormanager.EmulatorManagerConfig
 import com.github.grishberg.androidemulatormanager.StopEmulatorsTask
+import com.github.grishberg.tests.AllTestsInOneScopeCommandProvider
 import com.github.grishberg.tests.InstrumentalTestTask
 import com.github.grishberg.tests.InstrumentationInfo
 import org.gradle.api.Plugin
@@ -27,14 +28,15 @@ class RunTestPlugin implements Plugin<Project> {
          */
         def runTestTask = project.tasks.create("runTestTask") {
             dependsOn('installDebug', 'installDebugAndroidTest')
-            finalizedBy 'instrumentalTestTask'
+            finalizedBy instrumentalTestTask
             mustRunAfter createAndRunEmulatorsTask
             group 'android'
             doLast {
                 println "-------------------- setup instrumentation tests ------------------"
 
                 // Custom Args provider for instrumentation test
-                instrumentalTestTask.instrumentationArgsProvider = new TestArgsProvider()
+                TestArgsProvider argsProvider = new TestArgsProvider()
+                instrumentalTestTask.instrumentationArgsProvider = argsProvider
                 def instrumentationInfo = new InstrumentationInfo.Builder(
                         "com.github.grishberg.instrumentaltestsample",
                         "com.github.grishberg.instrumentaltestsample.test",
@@ -42,7 +44,8 @@ class RunTestPlugin implements Plugin<Project> {
                         .setFlavorName("TEST_FLAVOR")
                         .build() as InstrumentationInfo
 
-                instrumentalTestTask.commandProvider = In
+                instrumentalTestTask.commandProvider = new AllTestsInOneScopeCommandProvider(
+                        project, instrumentationInfo, argsProvider)
                 instrumentalTestTask.instrumentationInfo = instrumentationInfo
             }
         }
