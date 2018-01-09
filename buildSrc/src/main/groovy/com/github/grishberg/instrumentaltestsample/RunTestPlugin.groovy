@@ -5,9 +5,6 @@ import com.github.grishberg.androidemulatormanager.DisplayMode
 import com.github.grishberg.androidemulatormanager.EmulatorConfig
 import com.github.grishberg.androidemulatormanager.ext.EmulatorManagerConfig
 import com.github.grishberg.androidemulatormanager.StopEmulatorsTask
-import com.github.grishberg.tests.AllTestsInOneScopeCommandProvider
-import com.github.grishberg.tests.InstrumentalTestTask
-import com.github.grishberg.tests.InstrumentationInfo
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -20,34 +17,15 @@ class RunTestPlugin implements Plugin<Project> {
         EmulatorManagerConfig emulatorsConfig = project.extensions.findByType(EmulatorManagerConfig)
         CreateAndRunEmulatorsTask createAndRunEmulatorsTask = project.tasks.findByName(CreateAndRunEmulatorsTask.NAME)
         StopEmulatorsTask stopEmulatorsTask = project.tasks.findByName(StopEmulatorsTask.NAME)
-        InstrumentalTestTask instrumentalTestTask = project.tasks.findByName(InstrumentalTestTask.NAME)
-        instrumentalTestTask.finalizedBy stopEmulatorsTask
+        stopEmulatorsTask.mustRunAfter "connectedAndroidTest"
 
         /**
-         * Setup custom instrumentation test runner.
+         * Setup install apk and test apk
          */
-        def runTestTask = project.tasks.create("runTestTask") {
+        def installApkTask = project.tasks.create("installApk") {
             dependsOn('installDebug', 'installDebugAndroidTest')
-            finalizedBy instrumentalTestTask
+            finalizedBy(stopEmulatorsTask, "connectedAndroidTest")
             mustRunAfter createAndRunEmulatorsTask
-            group 'android'
-            doLast {
-                println "-------------------- setup instrumentation tests ------------------"
-
-                // Custom Args provider for instrumentation test
-                TestArgsProvider argsProvider = new TestArgsProvider()
-                instrumentalTestTask.instrumentationArgsProvider = argsProvider
-                def instrumentationInfo = new InstrumentationInfo.Builder(
-                        "com.github.grishberg.instrumentaltestsample",
-                        "com.github.grishberg.instrumentaltestsample.test",
-                        "android.support.test.runner.AndroidJUnitRunner")
-                        .setFlavorName("TEST_FLAVOR")
-                        .build() as InstrumentationInfo
-
-                instrumentalTestTask.commandProvider = new AllTestsInOneScopeCommandProvider(
-                        project, instrumentationInfo, argsProvider)
-                instrumentalTestTask.instrumentationInfo = instrumentationInfo
-            }
         }
 
         /**
@@ -55,22 +33,15 @@ class RunTestPlugin implements Plugin<Project> {
          */
         project.tasks.create("startConnectedTest") {
             finalizedBy createAndRunEmulatorsTask
-            finalizedBy runTestTask
+            finalizedBy installApkTask
             finalizedBy 'assembleDebug'
             finalizedBy 'assembleAndroidTest'
 
-            group 'android'
             doLast {
-                println "--------------- setup emulators ----------------"
-                EmulatorConfig argPhone = new EmulatorConfig("test_phone",
-                        DisplayMode.PHONE_HDPI, 26)
+                EmulatorConfig argPhone = new EmulatorConfig("test_phone", DisplayMode.PHONE_HDPI, 26)
                 argPhone.setDiskSize(2048)
-                EmulatorConfig argTablet = new EmulatorConfig("test_tablet",
-                        DisplayMode.TABLET_XHDPI, 26)
-                argTablet.setDiskSize(2048)
-                EmulatorConfig[] args = [argPhone, argTablet]
-
-                emulatorsConfig.setEmulatorArgs(args)
+                EmulatorConfig[] configs = [argPhone]
+                emulatorsConfig.setEmulatorArgs(configs)
                 emulatorsConfig.setWaitingTimeout(60 * 3 * 1000)
             }
         }
