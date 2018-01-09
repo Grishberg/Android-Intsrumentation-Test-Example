@@ -3,7 +3,7 @@ package com.github.grishberg.instrumentaltestsample
 import com.github.grishberg.androidemulatormanager.CreateAndRunEmulatorsTask
 import com.github.grishberg.androidemulatormanager.DisplayMode
 import com.github.grishberg.androidemulatormanager.EmulatorConfig
-import com.github.grishberg.androidemulatormanager.EmulatorManagerConfig
+import com.github.grishberg.androidemulatormanager.ext.EmulatorManagerConfig
 import com.github.grishberg.androidemulatormanager.StopEmulatorsTask
 import com.github.grishberg.tests.AllTestsInOneScopeCommandProvider
 import com.github.grishberg.tests.InstrumentalTestTask
