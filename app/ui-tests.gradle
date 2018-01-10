@@ -1,9 +1,11 @@
 // add this to use import *
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath 'com.github.grishberg:android-emulator-manager:0.3.8'
     }
 }
