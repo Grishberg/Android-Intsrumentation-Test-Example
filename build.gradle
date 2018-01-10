@@ -9,9 +9,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
-
-        classpath 'com.github.grishberg:AndroidInstrumentalTestRunner:0.1.7'
-        classpath 'com.github.grishberg:AndroidEmulatorManager:0.2.13'
+        classpath 'com.github.grishberg:android-emulator-manager:0.3.8'
     }
 }
 

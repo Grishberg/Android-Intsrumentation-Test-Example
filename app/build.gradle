@@ -1,9 +1,6 @@
-import com.github.grishberg.instrumentaltestsample.RunTestPlugin
-
 apply plugin: 'com.android.application'
-apply plugin: 'com.github.grishberg.instrumentalplugin'
 apply plugin: 'com.github.grishberg.androidemulatormanager'
-apply plugin: RunTestPlugin
+apply from: "ui-tests.gradle"
 
 android {
     compileSdkVersion 26
@@ -34,3 +31,4 @@ dependencies {
     // instrumental test framework
     androidTestImplementation 'com.github.grishberg:annotationprinter:0.1.1'
 }
+

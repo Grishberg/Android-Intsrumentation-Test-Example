@@ -1,24 +1,13 @@
-# Android-Intsrumentation-Test-Example
+// add this to use import *
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.grishberg:android-emulator-manager:0.3.8'
+    }
+}
 
-Steps: 
-1) add ```classpath 'com.github.grishberg:android-emulator-manager:0.3.8'```
-to projects build.gradle
-
-2) add ```apply plugin: 'com.github.grishberg.androidemulatormanager'
-          apply from: "ui-tests.gradle"```
-to module build.gradle
-
-3) create ui-tests.gradle in module folder and put:
-
-```buildscript {
-       repositories {
-           jcenter()
-       }
-       dependencies {
-           classpath 'com.github.grishberg:android-emulator-manager:0.3.8'
-       }
-   }
-   
 import com.github.grishberg.androidemulatormanager.CreateAndRunEmulatorsTask
 import com.github.grishberg.androidemulatormanager.DisplayMode
 import com.github.grishberg.androidemulatormanager.EmulatorConfig
@@ -56,9 +45,3 @@ project.tasks.create("startConnectedTest") {
         emulatorsConfig.setWaitingTimeout(60 * 3 * 1000)
     }
 }
-```
-
-5) Run with ```./gradlew startConnectedTest```
-   
- 
-   
