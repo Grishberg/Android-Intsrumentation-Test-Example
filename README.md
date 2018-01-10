@@ -10,7 +10,8 @@ to module build.gradle
 
 3) create ui-tests.gradle in module folder and put:
 
-```buildscript {
+```
+buildscript {
        repositories {
            jcenter()
        }
