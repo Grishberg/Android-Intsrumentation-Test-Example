@@ -1,20 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-
-buildscript {
-
-    repositories {
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-
-        classpath 'com.github.grishberg:AndroidInstrumentalTestRunner:0.1.7'
-        classpath 'com.github.grishberg:AndroidEmulatorManager:0.2.13'
-    }
-}
-
 allprojects {
     repositories {
         google()

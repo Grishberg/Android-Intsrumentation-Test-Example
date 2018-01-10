@@ -8,9 +8,6 @@ import com.github.grishberg.androidemulatormanager.StopEmulatorsTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-/**
- * Created by grishberg on 12.12.17.
- */
 class RunTestPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
