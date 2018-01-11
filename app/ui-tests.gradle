@@ -18,6 +18,7 @@ Task createAndRunEmulatorsTask = project.tasks.findByName(CreateAndRunEmulatorsT
 Task stopEmulatorsTask = project.tasks.findByName(StopEmulatorsTask.NAME)
 stopEmulatorsTask.mustRunAfter "connectedAndroidTest"
 
+// configurations for emulators, you can add several emulators : test_phone, test_tablet, e.t.c.
 emulatorConfigs {
     test_phone {
         name = "test_phone"

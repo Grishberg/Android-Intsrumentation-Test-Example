@@ -1,7 +1,7 @@
 # Android-Intsrumentation-Test-Example
 
 Steps: 
-1) add ```classpath 'com.github.grishberg:android-emulator-manager:0.3.8'```
+1) add ```classpath 'com.github.grishberg:android-emulator-manager:0.3.9'```
 to projects build.gradle
 
 2) add ```apply plugin: 'com.github.grishberg.androidemulatormanager'
@@ -10,26 +10,41 @@ to module build.gradle
 
 3) create ui-tests.gradle in module folder and put:
 
-```buildscript {
-       repositories {
-           jcenter()
-       }
-       dependencies {
-           classpath 'com.github.grishberg:android-emulator-manager:0.3.8'
-       }
-   }
-   
-import com.github.grishberg.androidemulatormanager.CreateAndRunEmulatorsTask
-import com.github.grishberg.androidemulatormanager.DisplayMode
-import com.github.grishberg.androidemulatormanager.EmulatorConfig
-import com.github.grishberg.androidemulatormanager.StopEmulatorsTask
-import com.github.grishberg.androidemulatormanager.ext.EmulatorManagerConfig
+```
+// add this to use import *
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.github.grishberg:android-emulator-manager:0.3.9'
+    }
+}
 
-EmulatorManagerConfig emulatorsConfig = project.extensions.findByType(EmulatorManagerConfig)
+import com.github.grishberg.androidemulatormanager.CreateAndRunEmulatorsTask
+import com.github.grishberg.androidemulatormanager.StopEmulatorsTask
+
 Task createAndRunEmulatorsTask = project.tasks.findByName(CreateAndRunEmulatorsTask.NAME)
 Task stopEmulatorsTask = project.tasks.findByName(StopEmulatorsTask.NAME)
 stopEmulatorsTask.mustRunAfter "connectedAndroidTest"
 
+// configurations for emulators, you can add several emulators : test_phone, test_tablet, e.t.c.
+emulatorConfigs {
+    test_phone {
+        name = "test_phone"
+        displayWidth = 768
+        displayHeight = 1280
+        displayDensity = 320
+        apiLevel = 26
+        diskSize = 2048
+    }
+}
+
+emulatorManagerConfig {
+    waitingTimeout = 60 * 3 * 1000
+}
 /**
  * Setup install apk and test apk
  */
@@ -47,14 +62,6 @@ project.tasks.create("startConnectedTest") {
     finalizedBy installApkTask
     finalizedBy 'assembleDebug'
     finalizedBy 'assembleAndroidTest'
-
-    doLast {
-        EmulatorConfig argPhone = new EmulatorConfig("test_phone", DisplayMode.PHONE_HDPI, 26)
-        argPhone.setDiskSize(2048)
-        EmulatorConfig[] configs = [argPhone]
-        emulatorsConfig.setEmulatorArgs(configs)
-        emulatorsConfig.setWaitingTimeout(60 * 3 * 1000)
-    }
 }
 ```
 
