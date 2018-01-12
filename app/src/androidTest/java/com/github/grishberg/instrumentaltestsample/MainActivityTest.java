@@ -40,13 +40,4 @@ public class MainActivityTest {
         onView(withId(R.id.textView))
                 .check(matches(withText(R.string.text_for_phone)));
     }
-
-    @TabletTest
-    @Test
-    public void testTabletButton() {
-        onView(withId(R.id.buttonForTablet)).perform(click());
-
-        onView(withId(R.id.textView))
-                .check(matches(withText(R.string.text_for_tablet)));
-    }
 }
