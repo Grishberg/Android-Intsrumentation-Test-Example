@@ -16,6 +16,7 @@ emulatorConfigs {
 emulatorManagerConfig {
     waitingTimeout = 60 * 5 * 1000
     //androidSdkPath = 'deps/android-sdk/sdk'
+    additionalEmulatorParameters = "-no-audio"
     installSystemImageIfNotExists = true
 }
 /**
