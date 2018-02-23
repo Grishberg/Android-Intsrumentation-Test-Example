@@ -8,7 +8,7 @@ emulatorConfigs {
         displayWidth = 768
         displayHeight = 1280
         displayDensity = 320
-        apiLevel = 22
+        apiLevel = 26
         diskSize = 2048
     }
 }
